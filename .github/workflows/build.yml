@@ -81,7 +81,7 @@ jobs:
         mkdir -p dest art
         DESTDIR=`pwd`/dest make install
         # Grab idevicesyslog.exe and deps
-        find /dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v art \;
+        find dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v art \;
         find /mingw64/bin/ -type f \( -name "libplist-2.0.dll" -o -name "libusbmuxd-2.0.dll" -o -name "libimobiledevice-glue-1.0.dll" -o -name "libcrypto-3-x64.dll" -o -name "libssl-3-x64.dll" \) -exec cp -v {} art \;
         tar -C art -cJf idevicesyslog.tar.xz .
 
