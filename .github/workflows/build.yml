@@ -64,11 +64,11 @@ jobs:
 
     - name: install external dependencies
       run: |
-          mkdir extract
-          for I in *.tar; do
-            tar -C extract -xvf $I
-          done
-          cp -r extract/* /
+        mkdir extract
+        for I in *.tar; do
+          tar -C extract -xvf $I
+        done
+        cp -r extract/* /
 
     - uses: actions/checkout@v2
     - name: autogen
@@ -82,9 +82,15 @@ jobs:
 
     - name: prepare artifact
       run: |
-          mkdir -p dest
-          DESTDIR=`pwd`/dest make install
-          tar -C dest -cf libimobiledevice.tar ${{ env.dest }}
+        mkdir -p dest
+        DESTDIR=`pwd`/dest make install
+        # Grab idevicesyslog.exe deps
+        find / -type f -name "libplist-2.0.dll" -exec cp {} dest \;
+        find / -type f -name "libusbmuxd-2.0.dll" -exec cp {} dest \;
+        find / -type f -name "libimobiledevice-glue-1.0.dll" -exec cp {} dest \;
+        find / -type f -name "libcrypto-3-x64.dll" -exec cp {} dest \;
+        find / -type f -name "libssl-3-x64.dll" -exec cp {} dest \;
+        tar -C dest -cf libimobiledevice.tar ${{ env.dest }}
 
     - name: publish artifact
       uses: actions/upload-artifact@v2
