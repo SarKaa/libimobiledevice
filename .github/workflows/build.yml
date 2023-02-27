@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  github_token: ${{secrets.GITHUB_TOKEN}}
+
 jobs:
   build-windows:
     runs-on: windows-2019
@@ -42,7 +45,6 @@ jobs:
     - name: fetch libplist
       uses: dawidd6/action-download-artifact@v2
       with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
         name: libplist-latest_${{ matrix.arch }}-${{ env.dest }}
         repo: libimobiledevice/libplist
@@ -50,7 +52,6 @@ jobs:
     - name: fetch libusbmuxd
       uses: dawidd6/action-download-artifact@v2
       with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
         name: libusbmuxd-latest_${{ matrix.arch }}-${{ env.dest }}
         repo: libimobiledevice/libusbmuxd
@@ -58,7 +59,6 @@ jobs:
     - name: fetch libimobiledevice-glue
       uses: dawidd6/action-download-artifact@v2
       with:
-        github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
         name: libimobiledevice-glue-latest_${{ matrix.arch }}-${{ env.dest }}
         repo: libimobiledevice/libimobiledevice-glue
@@ -79,16 +79,19 @@ jobs:
 
     - name: prepare release
       run: |
-        mkdir -p dest art
+        mkdir -p dest rel
         DESTDIR=`pwd`/dest make install
         # Grab idevicesyslog.exe and deps
-        find dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v {} art \;
-        find /mingw64/bin/ -type f \( -name "libplist-2.0.dll" -o -name "libusbmuxd-2.0.dll" -o -name "libimobiledevice-glue-1.0.dll" -o -name "libcrypto-3-x64.dll" -o -name "libssl-3-x64.dll" \) -exec cp -v {} art \;
-        tar -C art -cJf idevicesyslog-latest_${{ matrix.arch }}-${{ env.dest }}.tar.xz .
+        find dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v {} rel \;
+        find /mingw64/bin/ -type f \( -name "libplist-2.0.dll" -o \
+                                      -name "libusbmuxd-2.0.dll" -o \
+                                      -name "libimobiledevice-glue-1.0.dll" -o \
+                                      -name "libcrypto-3-x64.dll" -o \
+                                      -name "libssl-3-x64.dll" \) \
+                                      -exec cp -v {} rel \;
+        tar -C rel -cJvf idevicesyslog-latest_${{ matrix.arch }}-${{ env.dest }}.tar.xz .
 
     - name: publish release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         set -x
         TAG="${GITHUB_REF##*/}-${GITHUB_SHA:0:7}"
