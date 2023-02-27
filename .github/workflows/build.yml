@@ -68,29 +68,22 @@ jobs:
         for I in *.tar; do
           tar -C extract -xvf $I
         done
-        cp -r extract/* /
+        cp -v -r extract/* /
 
     - uses: actions/checkout@v2
-    - name: autogen
-      run: ./autogen.sh CC=gcc CXX=g++ --enable-debug
-
-    - name: make
-      run: make
-
-    - name: make install
-      run: make install
+    - name: autogen and make install
+      run: |
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug
+        make -j$(nproc --all) install
 
     - name: prepare artifact
       run: |
-        mkdir -p dest
+        mkdir -p dest art
         DESTDIR=`pwd`/dest make install
-        # Grab idevicesyslog.exe deps
-        find / -type f -name "libplist-2.0.dll" -exec cp {} dest \;
-        find / -type f -name "libusbmuxd-2.0.dll" -exec cp {} dest \;
-        find / -type f -name "libimobiledevice-glue-1.0.dll" -exec cp {} dest \;
-        find / -type f -name "libcrypto-3-x64.dll" -exec cp {} dest \;
-        find / -type f -name "libssl-3-x64.dll" -exec cp {} dest \;
-        tar -C dest -cf libimobiledevice.tar ${{ env.dest }}
+        # Grab idevicesyslog.exe and deps
+        find dest -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v art \;
+        find /mingw64/bin/ -type f \( -name "libplist-2.0.dll" -o -name "libusbmuxd-2.0.dll" -o -name "libimobiledevice-glue-1.0.dll" -o -name "libcrypto-3-x64.dll" -o -name "libssl-3-x64.dll" \) -exec cp -v {} art \;
+        tar -C art -cJf idevicesyslog.tar.xz ${{ env.dest }}
 
     - name: publish artifact
       uses: actions/upload-artifact@v2
