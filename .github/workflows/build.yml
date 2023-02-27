@@ -30,6 +30,7 @@ jobs:
           libtool
           autoconf
           automake-wrapper
+          mingw-w64-${{ matrix.arch }}-github-cli
 
     - name: prepare environment
       run: |
