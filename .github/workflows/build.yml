@@ -68,7 +68,7 @@ jobs:
         for I in *.tar; do
           tar -C extract -xvf $I
         done
-        cp -v -r extract/* /
+        cp -r extract/* /
 
     - uses: actions/checkout@v2
     - name: autogen and make install
@@ -76,17 +76,20 @@ jobs:
         ./autogen.sh CC=gcc CXX=g++ --enable-debug
         make -j$(nproc --all) install
 
-    - name: prepare artifact
+    - name: prepare release
       run: |
         mkdir -p dest art
         DESTDIR=`pwd`/dest make install
         # Grab idevicesyslog.exe and deps
-        find dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v art \;
+        find dest/mingw64/bin/ -type f \( -name "idevicesyslog.exe" -o -name "libimobiledevice-1.0.dll" \) -exec cp -v {} art \;
         find /mingw64/bin/ -type f \( -name "libplist-2.0.dll" -o -name "libusbmuxd-2.0.dll" -o -name "libimobiledevice-glue-1.0.dll" -o -name "libcrypto-3-x64.dll" -o -name "libssl-3-x64.dll" \) -exec cp -v {} art \;
-        tar -C art -cJf idevicesyslog.tar.xz .
+        tar -C art -cJf idevicesyslog-latest_${{ matrix.arch }}-${{ env.dest }}.tar.xz .
 
-    - name: publish artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: libimobiledevice-latest_${{ matrix.arch }}-${{ env.dest }}
-        path: libimobiledevice.tar
+    - name: publish release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -x
+        TAG="${GITHUB_REF##*/}-${GITHUB_SHA:0:7}"
+        gh release create "$TAG" --draft --title "Draft Release"
+        gh release upload "$TAG" idevicesyslog-latest_${{ matrix.arch }}-${{ env.dest }}.tar.xz
