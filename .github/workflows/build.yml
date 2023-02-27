@@ -2,6 +2,7 @@ name: build
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -13,8 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         include: [
-          { msystem: MINGW64, arch: x86_64 },
-          { msystem: MINGW32, arch: i686   }
+          { msystem: MINGW64, arch: x86_64 }
         ]
     steps:
     - uses: msys2/setup-msys2@v2
