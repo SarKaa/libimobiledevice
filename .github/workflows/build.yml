@@ -88,7 +88,7 @@ jobs:
         git clone --depth=1 --recursive https://github.com/curl/curl
         cd curl/
         autoreconf -fi
-        ./configure --enable-static --disable-shared --with-schannel --without-ssl --prefix="$HOME/rel"
+        ./configure --enable-static --disable-shared --with-schannel --prefix="$HOME/rel"
         cd lib/
         make -j install CFLAGS="-DCURL_STATICLIB -DNGHTTP2_STATICLIB" LDFLAGS="-all-static -Wl,--allow-multiple-definition"
         cp -a $HOME/rel/* /mingw64/
