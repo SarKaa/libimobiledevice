@@ -107,13 +107,21 @@ jobs:
                                       -name "libplist*" -o \
                                       -name "plistutil.exe" -o \
                                       -name "libusbmuxd*" -o \
-                                      -name "inetcat*" -o \
-                                      -name "iproxy*" -o \
+                                      -name "inetcat.exe" -o \
+                                      -name "iproxy.exe" -o \
                                       -name "libcurl*.dll" -o \
                                       -name "libxml2*.dll" -o \
                                       -name "libzip*.dll" -o \
-                                      -name "zlib1*.dll" -o \
-                                      -name "libreadline8*.dll" -o \
+                                      -name "zlib*.dll" -o \
+                                      -name "libreadline*.dll" -o \
+                                      -name "libbtrotlidec*.dll" -o \
+                                      -name "libidn*.dll" -o \
+                                      -name "libnghttp*.dll" -o \
+                                      -name "libpsl*.dll" -o \
+                                      -name "libbz2*.dll" -o \
+                                      -name "liblzma*.dll" -o \
+                                      -name "libzstd*.dll" -o \
+                                      -name "libtermcap*.dll" -o \
                                       -name "libcrypto*.dll" -o \
                                       -name "libssl*.dll" \) \
                                       -exec cp -v {} rel \;
