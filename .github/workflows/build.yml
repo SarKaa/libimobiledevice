@@ -49,6 +49,7 @@ jobs:
         cd libplist/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: build libimobiledevice-glue
       run: |
@@ -56,6 +57,7 @@ jobs:
         cd libimobiledevice-glue/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: build libusbmuxd
       run: |
@@ -63,12 +65,14 @@ jobs:
         cd libusbmuxd/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - uses: actions/checkout@v3
     - name: autogen and make install
       run: |
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     # other unrelated libimobiledevice projects
     - name: build libideviceactivation
@@ -77,6 +81,7 @@ jobs:
         cd libideviceactivation/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: build ideviceinstaller
       run: |
@@ -84,6 +89,7 @@ jobs:
         cd ideviceinstaller/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: build libirecovery
       run: |
@@ -91,6 +97,7 @@ jobs:
         cd libirecovery/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: build idevicerestore
       run: |
@@ -98,6 +105,7 @@ jobs:
         cd idevicerestore/
         ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
         make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        sudo cp -a "$HOME/rel/*" /mingw64/
 
     - name: prepare release
       run: |
