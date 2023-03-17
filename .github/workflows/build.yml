@@ -114,7 +114,10 @@ jobs:
                                       -name "libzip*.dll" -o \
                                       -name "zlib*.dll" -o \
                                       -name "libreadline*.dll" -o \
-                                      -name "libbtrotlidec*.dll" -o \
+                                      -name "libbrotlidec*.dll" -o \
+                                      -name "libiconv*.dll" -o \
+                                      -name "libssh*.dll" -o \
+                                      -name "libintl*.dll" -o \
                                       -name "libidn*.dll" -o \
                                       -name "libnghttp*.dll" -o \
                                       -name "libpsl*.dll" -o \
