@@ -75,6 +75,14 @@ jobs:
         cp -a $HOME/rel/* /mingw64/
 
     # other unrelated libimobiledevice projects
+    - name: build libxml2
+      run: |
+        git clone --depth=1 --recursive https://github.com/GNOME/libxml2
+        cd libxml2/
+        ./autogen.sh CC=gcc CXX=g++ --enable-static --enable-shared=no --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
+        cp -a $HOME/rel/* /mingw64/
+
     - name: build libideviceactivation
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libideviceactivation
