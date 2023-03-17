@@ -40,92 +40,68 @@ jobs:
       run: |
         echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
         git config --global core.autocrlf false
+        mkdir -p $HOME/rel
 
     # deps relevant to libimobiledevice specifically
     - name: build libplist
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libplist
         cd libplist/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: build libimobiledevice-glue
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libimobiledevice-glue
         cd libimobiledevice-glue/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: build libusbmuxd
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libusbmuxd
         cd libusbmuxd/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - uses: actions/checkout@v3
     - name: autogen and make install
       run: |
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     # other unrelated libimobiledevice projects
     - name: build libideviceactivation
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libideviceactivation
         cd libideviceactivation/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: build ideviceinstaller
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/ideviceinstaller
         cd ideviceinstaller/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: build libirecovery
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/libirecovery
         cd libirecovery/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: build idevicerestore
       run: |
         git clone --depth=1 --recursive https://github.com/libimobiledevice/idevicerestore
         cd idevicerestore/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython --enable-static --disable-shared --prefix="$HOME/rel"
+        make -j install LDFLAGS="-all-static -Wl,--allow-multiple-definition"
 
     - name: prepare release
       run: |
-        mkdir -p rel
-        find /mingw64/bin/ -type f \( -name "*idevice*" -o \
-                                      -name "*irecovery*" -o \
-                                      -name "libimobiledevice*" -o \
-                                      -name "libplist*" -o \
-                                      -name "plistutil.exe" -o \
-                                      -name "libusbmuxd*" -o \
-                                      -name "inetcat.exe" -o \
-                                      -name "iproxy.exe" -o \
-                                      -name "libcurl*.dll" -o \
-                                      -name "libxml2*.dll" -o \
-                                      -name "libzip*.dll" -o \
-                                      -name "zlib*.dll" -o \
-                                      -name "libreadline*.dll" -o \
-                                      -name "libbtrotlidec*.dll" -o \
-                                      -name "libidn*.dll" -o \
-                                      -name "libnghttp*.dll" -o \
-                                      -name "libpsl*.dll" -o \
-                                      -name "libbz2*.dll" -o \
-                                      -name "liblzma*.dll" -o \
-                                      -name "libzstd*.dll" -o \
-                                      -name "libtermcap*.dll" -o \
-                                      -name "libcrypto*.dll" -o \
-                                      -name "libssl*.dll" \) \
-                                      -exec cp -v {} rel \;
-        tar -C rel -cJvf libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar.xz .
+        tar -C "$HOME/rel" -cJvf libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar.xz .
 
     - name: publish release
       run: |
