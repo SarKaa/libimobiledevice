@@ -1,4 +1,4 @@
-# libimobiledevice
+# libimobiledevice - windows executables
 
 *A library to communicate with services on iOS devices using native protocols.*
 
