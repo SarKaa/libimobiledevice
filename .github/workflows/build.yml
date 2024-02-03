@@ -2,12 +2,7 @@ name: build
 
 on:
   push:
-  workflow_dispatch:
 
-env:
-  github_token: ${{secrets.GITHUB_TOKEN}}
-
-jobs:
   build-windows:
     runs-on: windows-2019
     defaults:
