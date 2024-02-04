@@ -4,9 +4,6 @@ on:
   push:
   workflow_dispatch:
 
-env:
-  github_token: ${{secrets.GITHUB_TOKEN}}
-
 jobs:
   build-windows:
     runs-on: windows-2019
@@ -36,67 +33,24 @@ jobs:
           mingw-w64-${{ matrix.arch }}-libzip
           mingw-w64-${{ matrix.arch }}-github-cli
 
+    - uses: actions/checkout@v4
     - name: prepare environment
       run: |
         echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
         git config --global core.autocrlf false
 
-    # deps relevant to libimobiledevice specifically
-    - name: build libplist
+    # libimobiledevice deps (1-3/8), libimobiledevice (4/8), and then unrelated projects (5-8/8)
+    - name: build projects
       run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/libplist
-        cd libplist/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - name: build libimobiledevice-glue
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/libimobiledevice-glue
-        cd libimobiledevice-glue/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - name: build libusbmuxd
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/libusbmuxd
-        cd libusbmuxd/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - uses: actions/checkout@v3
-    - name: autogen and make install
-      run: |
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    # other unrelated libimobiledevice projects
-    - name: build libideviceactivation
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/libideviceactivation
-        cd libideviceactivation/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - name: build ideviceinstaller
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/ideviceinstaller
-        cd ideviceinstaller/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - name: build libirecovery
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/libirecovery
-        cd libirecovery/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
-
-    - name: build idevicerestore
-      run: |
-        git clone --depth=1 --recursive https://github.com/libimobiledevice/idevicerestore
-        cd idevicerestore/
-        ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
-        make -j install
+        repos=("libplist" "libimobiledevice-glue" "libusbmuxd" "libimobiledevice" "libideviceactivation" "ideviceinstaller" "libirecovery" "idevicerestore")
+        for repo in "${repos[@]}"; do
+            echo "Building $repo..."
+            git clone --depth=1 --recursive "https://github.com/libimobiledevice/$repo"
+            pushd "$repo" > /dev/null
+            ./autogen.sh CC=gcc CXX=g++ --enable-debug --without-cython
+            make -j install
+            popd > /dev/null
+        done
 
     - name: prepare release
       run: |
@@ -132,6 +86,8 @@ jobs:
         tar -C rel -cvf libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar .
 
     - name: publish release
+      env:
+        github_token: ${{secrets.GITHUB_TOKEN}}
       run: |
         TAG="${GITHUB_REF##*/}-${GITHUB_SHA:0:7}"
         gh release create "$TAG" --title "Release $TAG"
