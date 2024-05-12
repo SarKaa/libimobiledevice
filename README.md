@@ -1,4 +1,4 @@
-# libimobiledevice
+# libimobiledevice - automated windows builds
 
 *A library to communicate with services on iOS devices using native protocols.*
 
