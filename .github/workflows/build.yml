@@ -1,6 +1,7 @@
 name: build
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
@@ -82,12 +83,12 @@ jobs:
                                       -name "libcrypto*.dll" -o \
                                       -name "libssl*.dll" \) \
                                       -exec cp -v {} rel \;
-        tar -C rel -cJvf libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar.xz .
+        tar -C rel -cvf libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar .
 
     - name: publish release
       env:
         github_token: ${{secrets.GITHUB_TOKEN}}
       run: |
         TAG="${GITHUB_REF##*/}-${GITHUB_SHA:0:7}"
-        gh release create "$TAG" --draft --title "Draft Release"
-        gh release upload "$TAG" libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar.xz
+        gh release create "$TAG" --title "Release $TAG"
+        gh release upload "$TAG" libimobile-suite-latest_${{ matrix.arch }}-${{ matrix.msystem }}.tar
