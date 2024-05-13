@@ -2,8 +2,8 @@ name: build
 
 on:
   workflow_dispatch:
-    schedule:
-    - cron:  '36 15 12 * *'
+  schedule:
+  - cron:  '5 14 13 * *'
 
 jobs:
   build-windows:
